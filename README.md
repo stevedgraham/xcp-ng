@@ -64,6 +64,8 @@ vi key.pem
 SCP up or paste in the XCP-ng prcertificate chain to chain.pem:
 vi chain.pem
 
+Back up the existing SSL cert/chain file:
+cp /etc/xensource/xapi-ssl.pem /etc/xensource/xapi-ssl.pem.bak
 
 xe host-server-certificate-install certificate=<path to certificate> private-key=<path to key> certificate-chain=<path to chain>
 
@@ -71,6 +73,21 @@ xe host-server-certificate-install certificate=./cert.pem private-key=./key.pem 
 
 Browse to the XCP-ng/XO-Lite URL and verify that the new certificate is being used. 
 If you have any issues, try opening the URL in a private window.  My browsers sometimes take time to figure it out.
+
+Test the certs:
+https://{XCP-ng/XO-Lite URL}
+
+If you have any issues, try opening the URL in a private window.  My browsers sometimes take time to figure it out.
+
+# cert rollback
+If the cert change just isn't working out, you can roll back to the XCP-ng/XO-Lite self-signed certs:
+1. cp /etc/xensource/xapi-ssl.pem /etc/xensource/xapi-ssl.pem.broken
+cp /etc/xensource/xapi-ssl.pem.bak /etc/xensource/xapi-ssl.pem
+
+Reboot the server and test browsing to the site URL again.
+
+
+
 
 ### Update the XCP-ng server
 <!-- After the system reboots, SSH into the XCP-ng server. -->
@@ -84,7 +101,7 @@ yum update -y
 
 Reboot the server when the update finishes. 
 
-
+##############################
 ### install xen orchestra (XOA)
 Vates provides several methods  [https://xen-orchestra.com/docs/installation.html] to install XOA.
 https://xen-orchestra.com/docs/xoa.html#alternative-install
@@ -119,11 +136,24 @@ xe vm-import filename=xoa_unified.xva
 After the import completes, list the available VM's:
 xe vm-list
 
-Start the XOA VM:
+# Start the XOA VM:
 xe vm-start vm="XOA"
 
-Get the UUID of the XOA server:
+# enable auto-start on the pool
+1. list the pools
+xe pool-list
+
+2. Enaable auto-poweron on the pool
+xe pool-param-set uuid=<UUID of the pool> other-config:auto_poweron=true
+
+
+# enable autostart on the XOA server
+1. Get the UUID of the XOA server:
 xe vm-list
+
+2. enable auto-start on the XOA server:
+xe vm-param-set uuid=<VM_UUID> other-config:auto_poweron=true
+
 
 # Set the "xoa" user SSH password:
 xe vm-param-set uuid=<UUID> xenstore-data:vm-data/system-account-xoa-password=<password>
@@ -216,12 +246,50 @@ Test browsing to the site URL again.
 
 #########################
 
-# Log into the XOA web interface
+# Log into the XOA dashboard
 https://{XOA URL} or https://{XOA IP address}
 
 If you have any cert issues you can always rename the new certs to pem.old, rename the old certs to .pem, and restart the 
 
 Log on as the e-mail address and password you created earlier.
+
+##
+# register your XOA server
+If you don't already have a Xen Orchestra account, you can create one here for free [https://xen-orchestra.com/]
+
+From the XOA dashboard, enter your Xen Orchestra e-mail address and password in the registration box and register your XOA server.
+
+# update your XOA software
+Even though we updated the OS earlier, the XOA software likely needs to be updated.
+
+Click on "upgrade" and follow the messages.  Be patient.  If the dashboard disconnects, wait a few minutes and refresh the browser.
+You may need to upgrade a few times to get the XOA software completely up to date.
+
+## add your first XCP-ng server to the pool
+Click on Home >  Add Server
+
+Provide the name, IP, root, and root password.
+If you installed certs from your own internal CA, be sure to enable the Unauthorized Certificates.
+
+
+
+
+
+####### mount nfs
+Even if you will only have one XCP-ng server, you still need to add the host before you can add storage and VM's.
+
+
+
+
+######### 
+# list running vm's
+xe vm-list
+
+# shut down a vm
+xe vm-shutdown name-label="XOA"
+
+# check again before shutting down/rebooting xcp-ng server
+xe vm-list
 
 
 ################
