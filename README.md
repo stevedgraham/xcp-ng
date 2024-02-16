@@ -1,6 +1,8 @@
 # xcp-ng
-Helpful info for installing and managing XCP-ng and Xen Orchestra.
+Helpful info for installing and managing XCP-ng, XO-Lite, and Xen Orchestra.
 
+This document is a work in progress.  Just look at it! :persevere:
+Use with caution!
 
 ### download xcp-ng
 you can download the latest stable release here:
@@ -44,27 +46,35 @@ trust list | grep -i {a phrase from your cert}
 For instance, to verify my development root cert was added: 
 trust list | grep -i avegy
 
+# 
 
 
 
+# provision a cert for the XCP-ng and put it on the server
+Per xx [https://docs.xcp-ng.org/guides/TLS-certificates-xcpng/] the full chain is optional but I recommend doing it anyway.  That means it should include the XCP-ng cert, the intermediate cert (if you have one), then the root cert.  Be sure each section is separated and they aren't running together.
 
+1. CD the home folder or a safe location to store the cert files.  Your call.
 
+SCP up or paste in the XCP-ng certifcate to cert.pem:
+vi cert.pem
 
+SCP up or paste in the XCP-ng private key to key.pem:
+vi key.pem
 
-
-
-
-
-
-
-
+SCP up or paste in the XCP-ng prcertificate chain to chain.pem:
+vi chain.pem
 
 
 xe host-server-certificate-install certificate=<path to certificate> private-key=<path to key> certificate-chain=<path to chain>
 
+xe host-server-certificate-install certificate=./cert.pem private-key=./key.pem certificate-chain=./chain.pem
+
+Browse to the XCP-ng/XO-Lite URL and verify that the new certificate is being used. 
+If you have any issues, try opening the URL in a private window.  My browsers sometimes take time to figure it out.
+
 ### Update the XCP-ng server
-After the system reboots, SSH into the XCP-ng server.
-Log on as root and the password you provided during the installation.
+<!-- After the system reboots, SSH into the XCP-ng server. -->
+<!-- Log on as root and the password you provided during the installation. -->
 
 According to cat /etc/os-release
 ID_LIKE="centos rhel fedora"
@@ -73,12 +83,6 @@ so we need to use Yum to update the system:
 yum update -y
 
 Reboot the server when the update finishes. 
-
-
-
-
-
-
 
 
 ### install xen orchestra (XOA)
