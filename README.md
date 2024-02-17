@@ -4,6 +4,14 @@ Helpful info for installing and managing XCP-ng, XO-Lite, and Xen Orchestra.
 This document is a work in progress.  Just look at it! :persevere:
 Use with caution!
 
+
+[https://xen-orchestra.com/docs/]
+[https://docs.xenserver.com/]
+[https://docs.xcp-ng.org/]
+
+[https://github.com/xcp-ng/]
+
+
 ### download xcp-ng
 you can download the latest stable release here:
 https://xcp-ng.org/#easy-to-install
@@ -38,7 +46,7 @@ After the system reboots, SSH into the XCP-ng server as "root" and the password 
 
 2. sudo vi /etc/pki/ca-trust/source/anchors/your-root-cert.crt
 3. paste in your root certificate
-4. sudo update-ca-trust
+4. update-ca-trust
 
 Because update-ca-trust does not provide feedback, check the trust list to see if your root cert is in the list:
 trust list | grep -i {a phrase from your cert}
@@ -294,4 +302,10 @@ xe vm-list
 
 ################
 power_state:running 
+
+
+
+
+use this later:
+https://github.com/xcp-ng/win-pv-drivers/releases
 
